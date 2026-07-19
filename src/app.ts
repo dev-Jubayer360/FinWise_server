@@ -22,10 +22,9 @@ app.use(
 );
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 })); // 100 requests per 15 mins
 
-// Better Auth API routes (must be before body parsers)
 app.use('/api/auth', async (req, res, next) => {
     try {
-        const { toNodeHandler } = await eval('import("better-auth/node")');
+        const { toNodeHandler } = await new Function('return import("better-auth/node")')();
         const auth = await getAuth();
         return toNodeHandler(auth)(req, res, next);
     } catch (error) {

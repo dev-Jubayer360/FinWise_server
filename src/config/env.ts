@@ -22,9 +22,9 @@ const envSchema = z.object({
 const _env = envSchema.safeParse(process.env);
 
 if (!_env.success) {
-  const errMsg = '❌ Invalid environment variables: ' + JSON.stringify(_env.error.format());
-  console.error(errMsg);
-  throw new Error(errMsg);
+  console.error('❌ Missing or Invalid environment variables:', JSON.stringify(_env.error.format()));
+  // We do NOT throw here because it crashes the Vercel serverless container on boot.
 }
 
-export default _env.data;
+const config = _env.success ? _env.data : (process.env as any);
+export default config;

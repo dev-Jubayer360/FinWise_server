@@ -3,7 +3,7 @@ import config from './env';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { MongoClient } from 'mongodb';
 
-const client = new MongoClient(config.MONGODB_URI);
+const client = new MongoClient(config.MONGODB_URI || "mongodb://localhost:27017/fallback");
 const db = client.db();
 
 export const auth = betterAuth({

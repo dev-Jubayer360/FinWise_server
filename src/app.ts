@@ -8,8 +8,7 @@ import rateLimit from 'express-rate-limit';
 import { globalErrorHandler } from './middlewares/error.middleware';
 import { notFoundHandler } from './middlewares/notFound.middleware';
 import routes from './routes';
-import { auth } from './config/better-auth';
-import { toNodeHandler } from 'better-auth/node';
+import { getAuth } from './config/better-auth';
 
 const app: Application = express();
 
@@ -24,7 +23,15 @@ app.use(
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 })); // 100 requests per 15 mins
 
 // Better Auth API routes (must be before body parsers)
-app.use('/api/auth', toNodeHandler(auth));
+app.use('/api/auth', async (req, res, next) => {
+    try {
+        const { toNodeHandler } = await eval('import("better-auth/node")');
+        const auth = await getAuth();
+        return toNodeHandler(auth)(req, res, next);
+    } catch (error) {
+        next(error);
+    }
+});
 
 // Parsers
 app.use(express.json());

@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { auth } from '../config/better-auth';
+import { getAuth } from '../config/better-auth';
 import { ApiError } from '../utils/ApiError';
 
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const auth = await getAuth();
     const session = await auth.api.getSession({
       headers: req.headers as any,
     });

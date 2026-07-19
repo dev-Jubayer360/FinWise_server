@@ -19,6 +19,9 @@ export const getAuth = async () => {
     const client = new MongoClient(config.MONGODB_URI || "mongodb://localhost:27017/fallback");
     const db = client.db();
 
+    const cleanClientUrl = config.CLIENT_URL.replace(/\/$/, "");
+    const cleanBaseUrl = config.BETTER_AUTH_URL.replace(/\/$/, "");
+
     _auth = betterAuth({
         database: mongodbAdapter(db),
         emailAndPassword: {
@@ -30,9 +33,15 @@ export const getAuth = async () => {
                 clientSecret: config.GOOGLE_CLIENT_SECRET as string,
             }
         },
-        trustedOrigins: [config.CLIENT_URL],
+        trustedOrigins: [cleanClientUrl],
         secret: config.BETTER_AUTH_SECRET,
-        baseURL: config.BETTER_AUTH_URL,
+        baseURL: cleanBaseUrl,
+        advanced: {
+            defaultCookieAttributes: {
+                sameSite: "none",
+                secure: true
+            }
+        }
     });
     
     return _auth;

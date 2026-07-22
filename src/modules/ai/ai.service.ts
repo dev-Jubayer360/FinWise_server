@@ -53,13 +53,15 @@ const categorize = async (title: string, description: string, merchant: string) 
   `;
 
   const response = await ai.models.generateContent({
-    model: 'gemini-flash-latest',
+    model: 'gemini-1.5-flash',
     contents: prompt,
+    config: {
+      responseMimeType: 'application/json',
+    }
   });
 
   const text = response.text || '{}';
-  const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) || text.match(/```\n([\s\S]*?)\n```/);
-  const parsedData = JSON.parse(jsonMatch ? jsonMatch[1] : text);
+  const parsedData = JSON.parse(text);
 
   return parsedData;
 };
